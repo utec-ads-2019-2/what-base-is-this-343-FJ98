@@ -1,4 +1,4 @@
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 using namespace std;
 
 int firstInTen [36 + 3];
@@ -7,6 +7,7 @@ char first [100];
 char second [100];
 
 void resetArrays();
+int determineStartBase(char *s);
 void convertToTen(char *s, int *save);
 void printResult();
 
@@ -34,27 +35,39 @@ void resetArrays ()
 }
 
 
-void convertToTen (char *s, int *save)
+int determineStartBase(char *s)
 {
-    int equivalentBase = 0; int sizeOfS = strlen (s); int startBase = 0;
-
-    for (int i = 0; s [i]; ++i)
+    int equivalentBase = 0; int sizeOfS = strlen(s); int startBase = 0;
+    for (int i = 0; i < sizeOfS; ++i)
     {
         if ( !isdigit( s[i] ) ) equivalentBase = s[i] - 55;
         else equivalentBase = s[i] - 48;
         startBase = max (startBase, equivalentBase);
     }
-    int sum = 0;
+    return startBase;
+}
+
+
+int sumOfBase(char* s, int i)
+{
+    int sum = 0; int equivalentBase = 0; int sizeOfS = strlen(s);
+    for (int j = sizeOfS - 1; j >= 0; --j)
+    {
+        if ( !isdigit(s[j]) ) equivalentBase = s[j] - 55;
+        else equivalentBase = s [j] - 48;
+
+        sum += static_cast<int>(equivalentBase * std::pow(i, sizeOfS - 1 - j));
+    }
+    return sum;
+}
+
+
+void convertToTen (char *s, int *save)
+{
+    int startBase = determineStartBase(s); int sum = 0;
     for ( int i = startBase + 1; i <= 36; ++i )
     {
-        sum = 0;
-        for (int j = sizeOfS - 1; j >= 0; --j)
-        {
-            if ( !isdigit (s [j]) ) equivalentBase = s [j] - 55;
-            else equivalentBase = s [j] - 48;
-
-            sum += static_cast<int>(equivalentBase * std::pow(i, sizeOfS - 1 - j));
-        }
+        sum = sumOfBase(s, i);
         save[i] = sum;
     }
 }
@@ -65,10 +78,10 @@ void printResult ()
     for ( int i = 2; i <= 36; i++ ) {
         for ( int j = 2; j <= 36; j++ ) {
             if ( firstInTen [i] == secondInTen [j] ) {
-                printf ("%s (base %i) = %s (base %i)\n", first, i, second, j);
+                cout << first << " (base "<< i << ") = " << second << " (base "<< j << ")" << endl;
                 return;
             }
         }
     }
-    printf ("%s is not equal to %s in any base 2..36\n", first, second);
+    cout << first << " is not equal to " << second << " in any base 2..36" << endl;
 }
